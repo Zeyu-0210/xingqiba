@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星期八</title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <canvas id="mini-orb" class="mini-orb" width="40" height="40" aria-hidden="true"></canvas>
+      <div class="brand-text">
+        <div class="brand-name">星期八</div>
+        <div class="brand-state"><span class="connection-dot" aria-hidden="true"></span><span id="side-state">连接中…</span></div>
+      </div>
+    </div>
+    <nav class="nav" aria-label="页面">
+      <button class="nav-item active" data-page="home" type="button" aria-label="语音助手" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zm7 9a7 7 0 0 1-6 6.93V21h-2v-2.07A7 7 0 0 1 5 12h2a5 5 0 0 0 10 0z"/></svg>
+        <span class="nav-label">语音助手</span>
+      </button>
+      <button class="nav-item" data-page="group" type="button" aria-label="AI 群聊">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm8 1a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM2 20c0-3.3 3.1-6 7-6s7 2.7 7 6zm15.5 0c0-1.9-.7-3.6-1.9-4.9.5-.1.9-.1 1.4-.1 2.8 0 5 1.8 5 4v1z"/></svg>
+        <span class="nav-label">AI 群聊</span>
+        <span class="badge" id="group-badge" hidden></span>
+      </button>
+      <button class="nav-item" data-page="settings" type="button" aria-label="设置">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1l.4 2.6h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>
+        <span class="nav-label">设置</span>
+      </button>
+    </nav>
+    <div class="side-foot">
+      <label class="switch-row">
+        <span>暂停监听</span>
+        <input type="checkbox" class="switch" id="pause-toggle" aria-label="暂停监听">
+      </label>
+      <div class="side-hint" id="side-hint"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="page" id="page-home" aria-labelledby="assistant-title">
+      <div class="home-layout">
+        <header class="workspace-head">
+          <h1 id="assistant-title">语音助手</h1>
+          <button class="btn ghost" id="home-settings" type="button">模型设置</button>
+        </header>
+        <div class="hero">
+          <div class="hero-text">
+            <div class="hero-mode" id="hero-mode">唤醒词对话</div>
+            <h2 class="hero-state" id="hero-state">连接中…</h2>
+            <div class="hero-detail" id="hero-detail"></div>
+            <div class="chips">
+              <label class="chip">回答者
+                <select id="brain-select" aria-label="回答者"></select>
+              </label>
+              <label class="chip chip-toggle" id="barge-control" title="它说话时你可以插话">
+                <input type="checkbox" id="barge-chip"> 可以打断
+              </label>
+            </div>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <canvas id="orb" class="orb" width="188" height="188"></canvas>
+          </div>
+        </div>
+        <div class="model-strip" id="home-models" aria-label="当前本地模型"></div>
+        <section class="conversation" aria-labelledby="home-history-label">
+          <div class="conversation-head">
+            <h2 id="home-history-label">对话记录</h2>
+            <span>今天</span>
+          </div>
+          <div class="messages" id="home-messages" aria-live="polite"></div>
+          <form class="composer" id="home-form">
+            <textarea id="home-input" rows="1" aria-label="给星期八发消息" placeholder="给星期八发消息"></textarea>
+            <button class="send" type="submit" aria-label="发送">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg>
+            </button>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <!-- AI 群聊 -->
+    <section class="page" id="page-group" hidden>
+      <header class="chat-head">
+        <div class="group-avatar" aria-hidden="true">AI</div>
+        <div class="chat-title">
+          <h1 class="chat-name">AI 群聊
+            <select class="project-select" id="project-select" aria-label="当前项目" title="切换项目：每个项目有自己的聊天记录、记忆和任务卡"></select>
+          </h1>
+          <div class="chat-sub" id="group-sub"></div>
+        </div>
+        <div class="head-actions">
+          <button class="btn danger" id="group-stop" type="button" title="立即停止本轮群聊任务、取消复查返修并收回执行权">强制停止</button>
+          <button class="btn ghost" id="group-continue" type="button" title="让每个 AI 看看别人刚才说的，再说一句">接着聊一轮</button>
+          <button class="btn ghost" id="group-tasks-btn" type="button" title="任务卡：谁在做、进展、分歧、等你拍板的事">任务<span class="count" id="tasks-count" hidden></span></button>
+          <button class="btn ghost" id="group-projects-btn" type="button" title="新建项目、改项目名和关联文件夹">项目</button>
+          <button class="btn ghost" id="group-memory-btn" type="button" title="群聊的长期记忆：AI 每次回答都会带上">记忆</button>
+          <button class="btn ghost" id="group-members-btn" type="button">成员</button>
+          <button class="btn ghost icon-only" id="group-clear" type="button" title="清空聊天（旧记录会存档）" aria-label="清空聊天">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4zm-3 6h12l-1 12H7z"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="group-body">
+        <div class="group-main">
+          <div class="messages" id="group-messages" aria-live="polite"></div>
+          <div class="typing" id="group-typing"></div>
+          <div class="hands-bar" id="hands-bar"></div>
+          <div class="mention-bar" id="mention-bar"></div>
+          <div class="dictation-panel" id="dictation-panel" hidden>
+            <div class="dictation-head">
+              <span class="recording-dot" aria-hidden="true"></span>
+              <strong id="dictation-title" role="status">录音中</strong>
+              <time id="dictation-time" class="dictation-time"></time>
+              <button id="dictation-cancel" class="btn ghost small" type="button">取消录音</button>
+            </div>
+            <div class="dictation-preview" id="dictation-preview"></div>
+          </div>
+          <form class="composer" id="group-form">
+            <textarea id="group-input" rows="1" aria-label="群消息" placeholder="发消息给群聊，输入 @ 指定成员"></textarea>
+            <button class="mic" id="group-mic" type="button" aria-label="语音输入" title="点一下录音，再点一下转成草稿">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg>
+            </button>
+            <button class="send" type="submit" aria-label="发送">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg>
+            </button>
+          </form>
+          <div class="composer-note">
+            <button type="button" class="text-button" id="asr-settings">本机转写</button>
+            <span>回车发送 · Shift + 回车换行</span>
+          </div>
+        </div>
+        <aside class="drawer" id="members-drawer" hidden>
+          <div class="drawer-head">
+            <span>群成员</span>
+            <button class="btn ghost icon-only" id="drawer-close" type="button" aria-label="关闭">✕</button>
+          </div>
+          <div id="member-list"></div>
+          <div class="drawer-section">拉新的 AI 进群</div>
+          <div class="preset-grid" id="preset-grid"></div>
+          <p class="fine">发到群里的话，会发给群里每一个云端 AI。密钥只存在你电脑上的 api_keys.json。</p>
+        </aside>
+        <aside class="drawer" id="tasks-drawer" hidden>
+          <div class="drawer-head">
+            <span>任务卡</span>
+            <button class="btn ghost icon-only" id="tasks-close" type="button" aria-label="关闭">✕</button>
+          </div>
+          <p class="fine" style="margin-top:0">鼠标移到群消息上点“📌 转为任务”就能建卡。当前任务每轮聊完会由本地模型自动更新进展、分歧和要你拍板的事；点“继续任务”或在群里说“继续任务：关键词”就接着推进。</p>
+          <div id="task-list"></div>
+        </aside>
+        <aside class="drawer" id="memory-drawer" hidden>
+          <div class="drawer-head">
+            <span>群聊的长期记忆</span>
+            <button class="btn ghost icon-only" id="memory-close" type="button" aria-label="关闭">✕</button>
+          </div>
+          <p class="fine">像秘书的笔记本：群里的 AI 每次回答都会带上它和最近 30 条消息。每多 20 条新消息，本地模型会自动整理一次（免费）。在群里说“记住：……”会原样记进来。你也可以直接改。</p>
+          <div class="fine" id="memory-info"></div>
+          <textarea class="memory-text" id="memory-text" spellcheck="false" placeholder="还没有记忆。聊得多了会自动整理；也可以直接在这里写。"></textarea>
+          <div class="member-actions">
+            <button class="btn small ghost" id="memory-update" type="button" title="把还没整理的消息现在就整理进来">现在整理</button>
+            <button class="btn small primary" id="memory-save" type="button">保存</button>
+          </div>
+        </aside>
+        <aside class="drawer" id="projects-drawer" hidden>
+          <div class="drawer-head">
+            <span>项目</span>
+            <button class="btn ghost icon-only" id="projects-close" type="button" aria-label="关闭">✕</button>
+          </div>
+          <p class="fine" style="margin-top:0">每个项目有自己的聊天记录、长期记忆和任务卡；成员和执行权全群共用。切回某个项目，AI 就接着那个项目的记录往下聊。</p>
+          <div class="drawer-section">当前项目</div>
+          <div class="member-edit">
+            <label class="field">项目名<input id="project-name"></label>
+            <label class="field">关联文件夹（一行一个，AI 会优先看这里）<textarea id="project-folders" rows="3" placeholder="比如 D:\voice-assistant"></textarea></label>
+            <div class="member-actions"><button class="btn small primary" id="project-save" type="button">保存</button></div>
+          </div>
+          <div class="drawer-section">新建项目</div>
+          <div class="member-edit">
+            <label class="field">项目名<input id="project-new-name" placeholder="比如：毕业论文"></label>
+            <label class="field">关联文件夹（可不填）<textarea id="project-new-folders" rows="2"></textarea></label>
+            <div class="member-actions"><button class="btn small primary" id="project-create" type="button">新建并切换过去</button></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section class="page" id="page-settings" hidden>
+      <div class="settings" id="settings"></div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<dialog class="dialog" id="confirm">
+  <form method="dialog">
+    <p id="confirm-text"></p>
+    <div class="dialog-actions">
+      <button class="btn ghost" value="no">取消</button>
+      <button class="btn danger" value="yes" id="confirm-yes">确定</button>
+    </div>
+  </form>
+</dialog>
+<script src="app.js"></script>
+</body>
+</html>
