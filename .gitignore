@@ -1,0 +1,29 @@
+# 私人数据：密钥、设置、记忆、聊天记录、日志（运行后自动生成，千万别上传）
+api_keys.json
+settings.json
+memory/
+groupchat/
+logs/
+.ui/
+.research/
+.takeover/
+.claude_brain/
+CLAUDE.md
+
+# 模型（体积大，各自有许可证，请自己下载）
+models/*
+!models/README.md
+
+# 环境和缓存
+.venv/
+__pycache__/
+*.pyc
+.cuda-cache/
+.hf-home/
+.pip-cache/
+
+# 测试产生的临时文件和录音
+tests/_tmp_*/
+tests/_overlay_shots/
+tests/audio/
+voices/
